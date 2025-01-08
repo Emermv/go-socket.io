@@ -344,13 +344,40 @@ func (bc *redisBroadcast) getNumSub(channel string) (int, error) {
 		return 0, err
 	}
 
+	// Use a type switch to check the type of rs
+	switch v := rs.(type) {
+	case []interface{}:
+		if len(v) < 2 {
+			return 0, errors.New("unexpected Redis reply: insufficient elements")
+		}
+		// Ensure the second element is int64
+		numSub64, ok := v[1].(int64)
+		if !ok {
+			return 0, errors.New("Redis reply: second element not int64")
+		}
+		return int(numSub64), nil
+	case []uint8:
+		// Handle the case where rs is a byte slice (e.g., a raw string)
+		return 0, errors.New("unexpected Redis reply: received byte slice instead of structured data")
+	default:
+		// Handle unknown or unsupported types
+		return 0, fmt.Errorf("unexpected Redis reply type: %T", rs)
+	}
+}
+
+/*func (bc *redisBroadcast) getNumSub(channel string) (int, error) {
+	rs, err := bc.pub.Conn.Do("PUBSUB", "NUMSUB", channel)
+	if err != nil {
+		return 0, err
+	}
+
 	numSub64, ok := rs.([]interface{})[1].(int64)
 	if !ok {
 		return 0, errors.New("redis reply cast to int error")
 	}
 	return int(numSub64), nil
 }
-
+*/
 // Handle request from redis channel.
 func (bc *redisBroadcast) onRequest(msg []byte) {
 	var req map[string]string
