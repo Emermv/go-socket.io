@@ -1,7 +1,3 @@
-# WARNING
-
-**This repo is archived. Please check the forked one https://github.com/feederco/go-socket.io.**
-
 # go-socket.io
 
 go-socket.io is library an implementation of [Socket.IO](http://socket.io) in Golang, which is a realtime application framework.
@@ -32,7 +28,11 @@ Current this library supports 1.4 version of the Socket.IO client. It supports r
 Install the package with:
 
 ```bash
-go get github.com/googollee/go-socket.io
+go get github.com/Emermv/go-socket.io
+```
+In go.mod
+```go
+replace github.com/googollee/go-socket.io => github.com/Emermv/go-socket.io v0.0.0-20250108191927-74799f756f0b
 ```
 
 Import it with:
